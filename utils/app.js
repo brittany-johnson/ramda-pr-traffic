@@ -1,12 +1,6 @@
 require('dotenv').config()
 const axios = require('axios')
-const fs = require('fs')
-
-/*
-TODO
-[] add error handeling 
-[] export getRepoPRData
-*/
+const {format: prettyFormat} = require('pretty-format')
 
 const repoPRData = {}
 
@@ -16,12 +10,14 @@ const getRepos = async () => {
             'Authorization': process.env.API_KEY,
             'User-Agent': 'postman-request'
         }
-    }).then((responses) => {
+    })
+    .then((responses) => {
         responses.data.forEach(response => {
             let repoName = response["full_name"]
             repoPRData[repoName] = {}
         })
     })
+    .catch((error) => console.log(`Something went wrong:${error}`))
 }
 
 const getPrData = () => {
@@ -37,10 +33,14 @@ const getPrData = () => {
                 let number = response["number"]
                 let url = response["url"]
                 let state = response["state"]
+                let mergedAt = response["merged_at"]
+                let createdAt = response["created_at"]
 
                 repoPRData[repo][number] = {
-                    'url': url,
-                    'state': state
+                    url,
+                    state,
+                    mergedAt,
+                    createdAt,
                 }
             })
         }
@@ -48,16 +48,21 @@ const getPrData = () => {
     return Promise.all(repoData.map(data => data))
 }
 
-const saveData = (data) => {
-    JSONData = JSON.stringify(data)
-    fs.writeFileSync('prData.json', JSONData)
+const countPRsRetrieved = (repos) => {
+    let count = 0
+    Object.values(repos).forEach((repo) => {
+        count += Object.values(repo).length
+    })
+    return count
 }
 
-const getRepoPRData = async () => {
-    console.log('calling')
+const getRepoPRData = () => {
+    console.log('Calling Github...📞')
     getRepos()
     .then(() => getPrData())
-    .then(() => saveData(repoPRData))
+    .then(() => console.log(prettyFormat(repoPRData)))
+    .then(() => console.log(countPRsRetrieved(Object.values(repoPRData))))
+    .catch((error) => console.log(`Something went wrong:${error}`))
 }
 
 getRepoPRData()
