@@ -61,7 +61,7 @@ const getRepoPRData = () => {
     getRepos()
     .then(() => getPrData())
     .then(() => console.log(prettyFormat(repoPRData)))
-    .then(() => console.log(countPRsRetrieved(Object.values(repoPRData))))
+    .then(() => console.log(`${countPRsRetrieved(Object.values(repoPRData))} PRs have been retrieved 🎣`))
     .catch((error) => console.log(`Something went wrong:${error}`))
 }
 
