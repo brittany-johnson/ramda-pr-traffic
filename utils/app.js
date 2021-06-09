@@ -20,30 +20,35 @@ const getRepos = async () => {
     .catch((error) => console.log(`Something went wrong:${error}`))
 }
 
-const getPrData = () => {
-    const repoData = Object.keys(repoPRData).map(async repo => {
-        const responses = await axios.get(`https://api.github.com/repos/${repo}/pulls?state=all`, {
-            headers: {
-                'Authorization': process.env.API_KEY,
-                'User-Agent': 'postman-request',
+const savePageData = async(repo, page) => {
+    const responses = await axios.get(`https://api.github.com/repos/${repo}/pulls?state=all&per_page=100&page=${page}`, {
+        headers: {
+            'Authorization': process.env.API_KEY,
+            'User-Agent': 'axios',
+        }
+    })
+    if (responses.data.length > 0) {
+        responses.data.forEach(response => {
+            let number = response["number"]
+            let url = response["url"]
+            let state = response["state"]
+            let mergedAt = response["merged_at"]
+            let createdAt = response["created_at"]
+
+            repoPRData[repo][number] = {
+                url,
+                state,
+                mergedAt,
+                createdAt,
             }
         })
-        if (responses.data.length) {
-            responses.data.forEach(response => {
-                let number = response["number"]
-                let url = response["url"]
-                let state = response["state"]
-                let mergedAt = response["merged_at"]
-                let createdAt = response["created_at"]
+        return savePageData(repo, page + 1)
+    } else { return }
+}
 
-                repoPRData[repo][number] = {
-                    url,
-                    state,
-                    mergedAt,
-                    createdAt,
-                }
-            })
-        }
+const getPrData = (page = 1) => {
+    const repoData = Object.keys(repoPRData).map(async repo => {
+        await savePageData(repo, page).then((value) => value)
     })
     return Promise.all(repoData.map(data => data))
 }

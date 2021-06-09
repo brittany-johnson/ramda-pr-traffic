@@ -3,7 +3,7 @@
 Hello! 
 Thank you for taking the time to review my code. 
 
-As of 6/7/21 @ 6:46pm, this project retrieves 156 open and closed PRs from the Ramda org on Github.
+As of 6/9/21 @ 12:45am, this project retrieves 1973 open and closed PRs from the Ramda org on Github.
 
 The up to date value is also printed to the console when app is ran.
 
@@ -33,9 +33,9 @@ repoPRData = {
 }
 ```
 
-`getPrData()`
+`savePageData()`
 
-Uses the `full_name` metadata stored in `repoPRData` to make HTTP GET requests for all PRs (opened and closed) in each repo in the Ramda org. By default, the last 30 PRs are included in page 1's reponse.
+Uses the `full_name` metadata stored in `repoPRData` to make HTTP GET requests for all PRs (opened and closed) in each repo in the Ramda org. The `per_page` value is manually set to 100.
 
 It then stores the PRs number, url, state, date merged at, and date created at inside its repo object in `repoPRData`.
 ```
@@ -53,6 +53,11 @@ repoPRData = {
 }
 
 ```
+
+`getPrData()`
+
+Passes repo names stored in `repoPRData` and the page number to start on (default value 1) to savePageData.
+
 
 `countPRsRetrieved()`
 
