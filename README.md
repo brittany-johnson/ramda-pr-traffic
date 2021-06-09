@@ -56,7 +56,7 @@ repoPRData = {
 
 `getPrData()`
 
-Passes repo names stored in `repoPRData` and the page number to start on (default value 1) to savePageData.
+Calls `savePageData()` and passes in repo names stored in `repoPRData` and the page number to start on (default value 1).
 
 
 `countPRsRetrieved()`
